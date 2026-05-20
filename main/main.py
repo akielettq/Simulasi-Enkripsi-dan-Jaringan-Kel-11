@@ -1,9 +1,6 @@
 import os
 import time
 
-# =======================================================
-# 1. STACK & QUEUE (Tumpukan Pesan & Antrean Jaringan)
-# =======================================================
 class StackPesan:
     def __init__(self):
         self.daftar_pesan = []

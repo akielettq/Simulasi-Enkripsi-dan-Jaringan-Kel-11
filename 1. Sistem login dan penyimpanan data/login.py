@@ -6,9 +6,7 @@ import os
 # =====================================================
 
 
-
 # BAGIAN 1 : MEMBUAT HASH TABLE AKUN
-
 
 class HashTableAkun:
     def __init__(self):

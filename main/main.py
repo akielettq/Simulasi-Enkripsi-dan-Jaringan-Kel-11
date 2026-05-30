@@ -5,6 +5,9 @@ import time
 # SIMULASI KRIPTOGRAFI DAN JARINGAN AMAN - KELOMPOK 11
 # =======================================================
 
+def bersihkan_layar():
+    os.system('cls' if os.name == 'nt' else 'clear')
+
 # =======================================================
 # 1. STACK & QUEUE
 # Penjelasan: 
@@ -81,6 +84,13 @@ class HashTableAkun:
             if indeks == indeks_awal:
                 break
         return None
+
+    def ambil_semua_username(self):
+        daftar_user = []
+        for laci in self.tabel:
+            if laci is not None:
+                daftar_user.append(laci[0])
+        return daftar_user
 
 class SistemUtama:
     def __init__(self):
@@ -161,18 +171,18 @@ class CircularLinkedList:
             self.head = new_node
             self.tail = new_node
             self.current = new_node
-            new_node.next = self.head # Circular: pointer kembali ke awal
+            new_node.next = self.head 
         else:
             self.tail.next = new_node
             self.tail = new_node
-            self.tail.next = self.head # Circular: Ekor selalu menunjuk Kepala
+            self.tail.next = self.head 
 
     def get_next_server(self):
         if self.head is None:
             return None
             
         selected_server = self.current.server_name
-        self.current = self.current.next # Geser ke server berikutnya
+        self.current = self.current.next 
         return selected_server
 
 
@@ -202,13 +212,10 @@ class TreeNode:
         self.right = None
 
 def inorder_traversal(current_node, depth):
-    # DFS Traversal (Kiri -> Cetak -> Kanan)
     if current_node is not None:
         inorder_traversal(current_node.left, depth + 1)
-        
         spasi = "   " * depth
         print(spasi + "-> " + current_node.data)
-        
         inorder_traversal(current_node.right, depth + 1)
 
 
@@ -291,6 +298,8 @@ def main():
 
     # ================= LOOOPING MENU =================
     while True:
+        bersihkan_layar()
+        
         print("\n===========================================")
         print(" PROGRAM CHAT RAHASIA (KELOMPOK 11) ")
         print("===========================================")
@@ -313,6 +322,8 @@ def main():
                 log_buku.append_log("Ada user baru daftar namanya: " + nama)
             else:
                 print(">> Gagal, nama itu sudah ada yang punya.")
+                
+            input("\n[Tekan Enter untuk kembali ke menu utama...]")
 
         # --- MENU 2: LOGIN & CHAT ---
         elif pilihan == '2':
@@ -340,6 +351,21 @@ def main():
 
                 kirim_jawab = input("\nMau kirim pesan ke teman? (Y/N): ")
                 if kirim_jawab.upper() == 'Y':
+                    
+                    # --- FITUR TAMPILKAN DAFTAR TEMAN ---
+                    semua_teman = sistem.database.ambil_semua_username()
+                    print("\n--- DAFTAR KONTAK TERSEDIA ---")
+                    ada_teman = False
+                    for teman in semua_teman:
+                        if teman != nama: 
+                            print("👤 " + teman)
+                            ada_teman = True
+                            
+                    if not ada_teman:
+                        print("Belum ada user lain yang mendaftar.")
+                    print("------------------------------")
+                    # ------------------------------------
+                    
                     nama_tujuan = input("Tulis username tujuan: ")
                     data_teman = sistem.database.cari_akun(nama_tujuan)
                     
@@ -376,15 +402,22 @@ def main():
                         print(">> Gagal, username tujuan tidak ketemu.")
             else:
                 print(">> Login Gagal! Password salah atau akun tidak ada.")
+                
+            input("\n[Tekan Enter untuk kembali ke menu utama...]")
 
         # --- MENU 3: BUKU RIWAYAT ---
         elif pilihan == '3':
+            bersihkan_layar()
             print("\n--- BUKU CATATAN ADMIN ---")
             if log_buku.current is None:
                 print("Belum ada kejadian apa-apa.")
+                input("\n[Tekan Enter untuk kembali...]")
             else:
                 while True:
+                    bersihkan_layar()
+                    print("--- BUKU CATATAN ADMIN ---")
                     print("Kejadian saat ini: " + log_buku.current.event)
+                    print("-" * 30)
                     tombol = input("Pencet A (Mundur), D (Maju), Q (Keluar Menu): ")
                     
                     if tombol.upper() == 'A' and log_buku.current.prev is not None:
@@ -396,6 +429,7 @@ def main():
 
         # --- MENU 4: PETA JARINGAN ---
         elif pilihan == '4':
+            bersihkan_layar()
             print("\n--- DATA PETA SERVER (GRAPH) ---")
             for nama_server, daftar_koneksi in peta.titik_rute.items():
                 print("Lokasi: " + nama_server)
@@ -404,9 +438,12 @@ def main():
                 
             print("\n--- DATA SILSILAH KEAMANAN (TREE) ---")
             inorder_traversal(akar_tree, 0)
+            
+            input("\n[Tekan Enter untuk kembali ke menu utama...]")
 
         # --- MENU 5: KELUAR ---
         elif pilihan == '5':
+            bersihkan_layar()
             print("Mematikan program... Dadah!")
             break
 

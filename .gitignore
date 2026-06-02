@@ -1,0 +1,9 @@
+# Mengabaikan folder cache bawaan Python yang bikin kotor
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Mengabaikan file sementara dari VS Code
+.vscode/
+tempCodeRunnerFile.py

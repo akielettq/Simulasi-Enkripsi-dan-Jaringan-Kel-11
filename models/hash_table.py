@@ -39,8 +39,9 @@ class HashTableAkun:
         return None
 
     def ambil_semua_username(self):
-        daftar_user = []
+        # [SET] Menggunakan Set untuk menghindari duplikasi username
+        daftar_user = set()
         for laci in self.tabel:
             if laci is not None:
-                daftar_user.append(laci[0])
-        return daftar_user
+                daftar_user.add(laci[0]) # Gunakan .add() untuk Set
+        return list(daftar_user) # Kembalikan sebagai List

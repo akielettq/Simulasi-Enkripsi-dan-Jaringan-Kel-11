@@ -2,6 +2,7 @@ import time
 from utils.layar import bersihkan_layar
 from structures.stack import StackPesan
 from structures.queue_net import QueueJaringan
+from structures.singular_linked_list import SinglyLinkedList
 from structures.doubly_linked_list import DoublyLinkedList
 from structures.circular_linked_list import CircularLinkedList
 from models.graph import PetaJaringan
@@ -156,12 +157,23 @@ def jalankan_aplikasi():
                         print(">> Selesai ngobrol. Mengakhiri sesi login...")
                         break 
                     
-                    print("\n--- DAFTAR KONTAK TERSEDIA ---")
+                    print("\n--- DAFTAR KONTAK TERSEDIA (A-Z) ---")
+                    daftar_kontak = SinglyLinkedList()
                     ada_teman = False
+                    
+                    # 1. Masukkan semua user (kecuali diri sendiri) ke Singly Linked List
                     for teman in semua_user:
                         if teman != nama: 
-                            print("👤 " + teman)
+                            daftar_kontak.tambah_kontak(teman)
                             ada_teman = True
+                            
+                    # 2. Panggil algoritma Sorting (Bubble Sort manual)
+                    daftar_kontak.urutkan_abjad()
+                    
+                    # 3. Tampilkan hasil yang sudah terurut
+                    kontak_terurut = daftar_kontak.ambil_semua()
+                    for teman_rapi in kontak_terurut:
+                        print("👤 " + teman_rapi)
                             
                     if not ada_teman:
                         print("Belum ada user lain yang mendaftar.")

@@ -81,7 +81,7 @@ def jalankan_aplikasi():
         print(CYAN + "[1]" + RESET + " Daftar Akun Baru")
         print(CYAN + "[2]" + RESET + " Masuk (Login) & Kirim Pesan")
         print(CYAN + "[3]" + RESET + " Cek Buku Riwayat Admin")
-        print(CYAN + "[4]" + RESET + " Cek Peta Server")
+        print(CYAN + "[4]" + RESET + " Cek Peta Server & Daftar Sensor")
         print(RED   + "[5]" + RESET + " Matikan Aplikasi")
         print(YELLOW + "=================================================" + RESET)
         
@@ -296,7 +296,7 @@ def jalankan_aplikasi():
                     elif tombol.upper() == 'Q':
                         break
 
-        # --- MENU 4: PETA JARINGAN ---
+        # --- MENU 4: PETA JARINGAN & TREE SENSOR ---
         elif pilihan == '4':
             bersihkan_layar()
             print("\n--- DATA PETA SERVER (GRAPH) ---")
@@ -306,6 +306,13 @@ def jalankan_aplikasi():
                 print("Lokasi: " + nama_server)
                 for tujuan in daftar_koneksi:
                     print("  -> Nyambung ke " + tujuan[0] + " (Jarak " + str(tujuan[1]) + "ms)")
+                
+            print("\n--- DATA SILSILAH SENSOR KATA KASAR (BST) ---")
+            # [TREE] Menampilkan isi Binary Search Tree menggunakan In-Order Traversal
+            if pohon_sensor.root is None:
+                print("Daftar sensor kata kasar masih kosong.")
+            else:
+                pohon_sensor.cetak_inorder(pohon_sensor.root, 0)
             
             input("\n[Tekan Enter untuk kembali ke menu utama...]")
 

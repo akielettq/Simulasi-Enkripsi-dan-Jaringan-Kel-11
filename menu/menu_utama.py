@@ -1,4 +1,5 @@
 import time
+import random
 from utils.layar import bersihkan_layar
 from structures.stack import StackPesan
 from structures.queue_net import QueueJaringan
@@ -6,7 +7,7 @@ from structures.singular_linked_list import SinglyLinkedList
 from structures.doubly_linked_list import DoublyLinkedList
 from structures.circular_linked_list import CircularLinkedList
 from models.graph import PetaJaringan
-from models.tree import TreeNode, inorder_traversal
+from models.tree import BSTSensor
 from sistem.sistem_utama import SistemUtama
 from sistem.kriptografi import MesinEnkripsi
 
@@ -16,10 +17,17 @@ def jalankan_aplikasi():
     # Memanggil semua cetakan (Class) dari folder lain 
     # ========================================================
     
-    sistem = SistemUtama()                 # Mengelola Hash Table & File txt
-    log_buku = DoublyLinkedList()          # Mengelola log riwayat admin
-    antrean = QueueJaringan()              # Mengelola Traffic pesan
-    mesin_sandi = MesinEnkripsi()          # Mengelola perhitungan aljabar linear
+    # Mengelola Hash Table & File txt
+    sistem = SistemUtama()                 
+    
+    # Mengelola log riwayat admin
+    log_buku = DoublyLinkedList()          
+    
+    # Mengelola Traffic pesan
+    antrean = QueueJaringan()              
+    
+    # Mengelola perhitungan aljabar linear
+    mesin_sandi = MesinEnkripsi()          
     
     # [CIRCULAR LINKED LIST] Mengatur server dengan konsep perputaran
     pengatur_server = CircularLinkedList()
@@ -27,15 +35,22 @@ def jalankan_aplikasi():
     pengatur_server.add_server("Proxy-Singapore")
     pengatur_server.add_server("Proxy-Tokyo")
     
-    # [GRAPH] Membuat topologi rute server menggunakan Adjacency List
+    # [GRAPH] Membuat topologi rute server (Pusat ke Cabang)
     peta = PetaJaringan()
-    peta.sambungkan_kabel("Pusat", "Proxy-Jakarta", 10)
-    peta.sambungkan_kabel("Proxy-Jakarta", "Proxy-Singapore", 15)
+    
+    # Jalur dengan Ping 12ms
+    peta.sambungkan_kabel("Pusat", "Proxy-Jakarta", 12)   
+    # Jalur dengan Ping 25ms
+    peta.sambungkan_kabel("Pusat", "Proxy-Singapore", 25) 
+    # Jalur dengan Ping 45ms
+    peta.sambungkan_kabel("Pusat", "Proxy-Tokyo", 45)     
 
-    # [TREE] Membuat silsilah keamanan (Binary Tree)
-    akar_tree = TreeNode("Sistem Keamanan Utama")
-    akar_tree.left = TreeNode("Data Public Key")
-    akar_tree.right = TreeNode("Data Private Key")
+# [TREE] Inisialisasi BST untuk Sensor Kata Kasar
+    pohon_sensor = BSTSensor()
+    pohon_sensor.tambah_kata_kotor("anjing")
+    pohon_sensor.tambah_kata_kotor("babi")
+    pohon_sensor.tambah_kata_kotor("bodoh")
+    pohon_sensor.tambah_kata_kotor("kampang")
 
     # ========================================================
     # [MAIN LOOP] Antarmuka CLI Interaktif
@@ -66,7 +81,7 @@ def jalankan_aplikasi():
         print(CYAN + "[1]" + RESET + " Daftar Akun Baru")
         print(CYAN + "[2]" + RESET + " Masuk (Login) & Kirim Pesan")
         print(CYAN + "[3]" + RESET + " Cek Buku Riwayat Admin")
-        print(CYAN + "[4]" + RESET + " Cek Peta Server & Tree Keamanan")
+        print(CYAN + "[4]" + RESET + " Cek Peta Server")
         print(RED   + "[5]" + RESET + " Matikan Aplikasi")
         print(YELLOW + "=================================================" + RESET)
         
@@ -74,12 +89,19 @@ def jalankan_aplikasi():
 
         # --- MENU 1: DAFTAR AKUN ---
         if pilihan == '1':
-            nama = input("Masukkan Username baru: ")
-            kata_sandi = input("Masukkan Password baru: ")
+            # Tambahkan .strip() di ujungnya biar membersihkan spasi
+            nama = input("Masukkan Username baru: ").strip()
+            kata_sandi = input("Masukkan Password baru: ").strip()
             
             # [QC] Validasi input kosong dan karakter ilegal
             if nama.strip() == "" or kata_sandi.strip() == "":
                 print(">> Gagal: Username dan Password tidak boleh kosong!")
+                input("\n[Tekan Enter untuk kembali...]")
+                continue
+            
+            # [QC] Validasi panjang karakter
+            if len(nama) > 20:
+                print(">> Gagal: Username maksimal 20 karakter!")
                 input("\n[Tekan Enter untuk kembali...]")
                 continue
                 
@@ -111,8 +133,8 @@ def jalankan_aplikasi():
                 input("\n[Tekan Enter untuk kembali ke menu utama...]")
                 continue 
 
-            nama = input("Username kamu: ")
-            kata_sandi = input("Password kamu: ")
+            nama = input("Username kamu: ").strip()
+            kata_sandi = input("Password kamu: ").strip()
             
             # [HASH TABLE] O(1) Search: Mengecek kecocokan username
             data_user = sistem.database.cari_akun(nama)
@@ -156,6 +178,8 @@ def jalankan_aplikasi():
                     if kirim_jawab.upper() != 'Y':
                         print(">> Selesai ngobrol. Mengakhiri sesi login...")
                         break 
+                    
+                    bersihkan_layar()
                     
                     print("\n--- DAFTAR KONTAK TERSEDIA (A-Z) ---")
                     daftar_kontak = SinglyLinkedList()
@@ -205,27 +229,37 @@ def jalankan_aplikasi():
                             
                             # [STACK] Implementasi fitur Undo (Membatalkan draft)
                             if batal.upper() == 'Z':
-                                pesan_batal = draf_pesan.ambil_pesan_terakhir() # POP Stack
+                                # POP Stack
+                                pesan_batal = draf_pesan.ambil_pesan_terakhir() 
                                 print(">> Oke, pesan '" + pesan_batal + "' batal dikirim.")
                             else:
                                 pesan_jadi = draf_pesan.ambil_pesan_terakhir()
                                 
                                 # [KRIPTOGRAFI] Enkripsi Plaintext menjadi array Ciphertext
                                 pesan_sandi = mesin_sandi.acak_pesan(pesan_jadi)
+                                
+                            # [TREE] Validasi kata kasar via Binary Search Tree
+                                if pohon_sensor.cek_kata_kotor(isi_pesan):
+                                    print("\n>> PERINGATAN SISTEM: Pesan Anda mengandung kata terlarang!")
+                                    print(">> Pesan diblokir dan gagal dikirim.")
+                                    continue
+                                
                                 print("\n>> PROSES 1: Mengacak pesan jadi =", pesan_sandi)
                                 
-                                # [QUEUE] Memasukkan paket ke antrean jaringan (FIFO)
                                 paket_data = [nama, pesan_sandi] 
                                 antrean.masuk_antrean(paket_data)
-                                print(">> PROSES 2: Menunggu antrean jaringan...")
-                                time.sleep(1)
                                 
-                                # Mengeluarkan paket yang pertama kali antre
-                                paket_jalan = antrean.keluar_antrean()
-                                
-                                # [CIRCULAR LL] Menentukan server pengirim menggunakan Round-Robin
                                 server_bertugas = pengatur_server.get_next_server()
-                                print(">> PROSES 3: Dikirim lewat " + server_bertugas)
+                                
+                                # [GRAPH] Menghitung delay berdasarkan jarak server
+                                ping = peta.cari_ping("Pusat", server_bertugas)
+                                print(f">> PROSES 2: Antrean masuk server {server_bertugas} (Ping: {ping}ms)")
+                                
+                                # Simulasi delay jaringan (ping dibagi 10 agar jadi detik)
+                                time.sleep(ping / 10.0) 
+                                
+                                paket_jalan = antrean.keluar_antrean()
+                                print(">> PROSES 3: Pesan berhasil melewati jaringan.")
                                 
                                 kotak_masuk_teman = data_teman[2]
                                 kotak_masuk_teman.tambah_pesan(paket_jalan)
@@ -262,19 +296,16 @@ def jalankan_aplikasi():
                     elif tombol.upper() == 'Q':
                         break
 
-        # --- MENU 4: PETA JARINGAN & TREE KEAMANAN ---
+        # --- MENU 4: PETA JARINGAN ---
         elif pilihan == '4':
             bersihkan_layar()
             print("\n--- DATA PETA SERVER (GRAPH) ---")
+            
             # [GRAPH] Membaca relasi antarkota/server di dalam Adjacency List
             for nama_server, daftar_koneksi in peta.titik_rute.items():
                 print("Lokasi: " + nama_server)
                 for tujuan in daftar_koneksi:
                     print("  -> Nyambung ke " + tujuan[0] + " (Jarak " + str(tujuan[1]) + "ms)")
-                
-            print("\n--- DATA SILSILAH KEAMANAN (TREE) ---")
-            # [TREE] Membaca node Tree dengan urutan In-Order Traversal (Kiri-Akar-Kanan)
-            inorder_traversal(akar_tree, 0)
             
             input("\n[Tekan Enter untuk kembali ke menu utama...]")
 
